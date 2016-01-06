@@ -1,6 +1,7 @@
 ## Basic XGB Code for the Kaggle ToolKit
 library(xgboost)
 source("/media/hdd/kaggle/KaggleToolKit/helpers/model_helpers/xgb_helpers.R")
+source("/media/hdd/kaggle/KaggleToolKit/helpers/error_funcs/ktk_base_ef.R")
 
 ktk_xgb <- function(input, mode='train', folds=FALSE){
   

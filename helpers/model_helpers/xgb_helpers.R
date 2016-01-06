@@ -100,7 +100,7 @@ train_mode <- function(input){
 cv_mode <- function(input, folds){
   
   tr_rows <- nrow(input$train)
-  fold_split <- c(rep(seq(1, folds), (tr_rows - (tr_rows %% folds))/folds), 1:(tr_rows %% folds))
+  fold_split <- sample(c(rep(seq(1, folds), (tr_rows - (tr_rows %% folds))/folds), 1:(tr_rows %% folds)))
 
   #training_data <- split(input$train, fold_split)
   #train_dmat <- lapply(training_data, make_dmat, target_col)
@@ -164,7 +164,7 @@ cv_mode <- function(input, folds){
 
       }
       
-      trained_models[[i]] <- list(model_object=all_trained_xgb, val_score=mean(perf), at_round=which.min(perf))
+      trained_models[[i]] <- list(model_object=all_trained_xgb, val_score=mean(perf), min_round=which.min(perf), max_round=which.max(perf), fold_master=fold_split)
       
     }
   }
@@ -208,7 +208,7 @@ cv_mode <- function(input, folds){
 
       }
       
-      trained_models[[i]] <- list(model_object=all_trained_xgb, val_score=mean(perf), at_round=which.min(perf))
+      trained_models[[i]] <- list(model_object=all_trained_xgb, val_score=mean(perf), min_round=which.min(perf), max_round=which.max(perf), fold_master=fold_split)
       
     }
   }
