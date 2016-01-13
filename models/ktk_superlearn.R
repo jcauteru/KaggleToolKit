@@ -29,9 +29,13 @@ super_learner_train <- function(sl_vector, outcome, phi='glm'){
 	# Combine the fold predictions for each cadidate learner
 	z_vects <- mclapply(sl_vector, cv_combiner, mc.cores=6)
 	z_matrix <- do.call(cbind, z_vects)
+	td <- as.data.frame(cbind(z_matrix, outcome))
+	nm <- paste('v', 1:ncol(td), sep='')
+	names(td) <- nm
+	fo <- as.formula(paste("v", ncol(td), "~.", sep=''))
 
 	if (phi == 'glm'){
-		super <- glm(z_matrix, outcome, family = binomial())
+		super <- glm(fo, as.data.frame(td), family = "binomial")
 	}
 
 	return(list(z_matrix=z_matrix, learner=super))
@@ -41,9 +45,11 @@ super_learner_train <- function(sl_vector, outcome, phi='glm'){
 super_learner_score <- function(to_be_scored, candidate_models, super, candidate_fold='max'){
 
 	if (candidate_fold == 'max'){
-		scored <- cv_aggregator_max(as.matrix(to_be_scored), candidate_models)
-		sll <- predict(super$learner, scored)
-		return(sll)
+		scored <- as.data.frame(cv_aggregator_max(as.matrix(to_be_scored), candidate_models))
+		nm <- paste('v', 1:length(candidate_models), sep='')
+		names(scored) <- nm
+		sll <- predict(super$learner, scored, type='response') # nto sure what is going on here...should defualt to probability 
+		return(list(model=super$learner, matrix=sll))
 	}
 
 }
